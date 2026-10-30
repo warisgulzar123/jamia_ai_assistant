@@ -40,23 +40,20 @@ app.use(
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Health / Status Check Endpoint
-app.get('/', (req, res) => {
-  res.status(200).json({
-    status: 'online',
-    service: 'Jamiatul Madina AI Assistant Backend (جامعۃ المدینہ)',
-    version: '1.0.0',
-    timestamp: new Date().toISOString(),
-  });
-});
-
-app.get('/health', (req, res) => {
+// Health / Status Check Endpoints (both root and /api prefixed for Vercel rewrites)
+const sendHealth = (req, res) => {
   res.status(200).json({
     status: 'healthy',
+    service: 'Jamiatul Madina AI Assistant Backend (جامعۃ المدینہ)',
     uptime: process.uptime(),
     timestamp: new Date().toISOString(),
   });
-});
+};
+
+app.get('/', sendHealth);
+app.get('/health', sendHealth);
+app.get('/api', sendHealth);
+app.get('/api/health', sendHealth);
 
 // API Routes
 app.use('/api/ai', aiRoutes);
