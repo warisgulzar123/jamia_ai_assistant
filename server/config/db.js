@@ -14,8 +14,14 @@ try {
 /**
  * Connect to MongoDB instance using Mongoose.
  * Reads connection string from process.env.MONGODB_URI.
+ * Caches active connection across serverless invocations (Vercel).
  */
 const connectDB = async () => {
+  // Reuse existing connection if ready (serverless optimization)
+  if (mongoose.connection && mongoose.connection.readyState >= 1) {
+    return mongoose.connection;
+  }
+
   try {
     let mongoUri = process.env.MONGODB_URI;
 
@@ -57,7 +63,10 @@ const connectDB = async () => {
     return conn;
   } catch (error) {
     console.error('MongoDB Connection Error:', error);
-    process.exit(1);
+    if (!process.env.VERCEL) {
+      process.exit(1);
+    }
+    throw error;
   }
 };
 

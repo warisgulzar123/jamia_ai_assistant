@@ -83,14 +83,16 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Start Server
-app.listen(PORT, () => {
-  console.log(`====================================================`);
-  console.log(` Jamiatul Madina AI Assistant Server Running`);
-  console.log(` Port: ${PORT}`);
-  console.log(` Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(` Base URL: http://localhost:${PORT}`);
-  console.log(`====================================================`);
-});
+// Start Server (only when run directly or locally, not inside Vercel serverless)
+if (require.main === module || !process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`====================================================`);
+    console.log(` Jamiatul Madina AI Assistant Server Running`);
+    console.log(` Port: ${PORT}`);
+    console.log(` Environment: ${process.env.NODE_ENV || 'development'}`);
+    console.log(` Base URL: http://localhost:${PORT}`);
+    console.log(`====================================================`);
+  });
+}
 
 module.exports = app;
